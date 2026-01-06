@@ -1,14 +1,19 @@
 <?php
 include "../db_connect.php";
 
+// 1. Tambahkan titik koma (;) di akhir session_start
+// 2. Sangat disarankan session_start diletakkan di baris paling atas
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $identifier = mysqli_real_escape_string($koneksi, $_POST['identifier']);
     $password = $_POST['password'];
     $role_input = $_POST['role'];
 
-    // 1. Hapus baris $_SESSION yang ada di sini karena $user belum didefinisikan
-
     // Cari user berdasarkan email ATAU nip dan role yang dipilih
+    // Berdasarkan tabel 'pegawai', kolom yang digunakan adalah 'email', 'nip', dan 'role'
     $query = "SELECT * FROM pegawai WHERE (email='$identifier' OR nip='$identifier') AND role='$role_input' LIMIT 1";
     $result = mysqli_query($koneksi, $query);
 
@@ -17,13 +22,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Verifikasi Password
         if (password_verify($password, $user['password'])) {
+            
+            // Regenerate ID session untuk keamanan
+            session_regenerate_id(true);
 
-            // SIMPAN SESSION DI SINI SETELAH $user BERHASIL DIAMBIL
+            // SIMPAN SESSION
             $_SESSION['id_user'] = $user['id_pegawai'];
             $_SESSION['role'] = $user['role'];
-
-            // Perhatikan: Gunakan ['nama'] sesuai struktur database Anda
-            $_SESSION['nama_lengkap'] = $user['nama'];
+            
+            // Menggunakan kolom 'nama_lengkap' sesuai struktur tabel 'pegawai'
+            $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
 
             // Redirect sesuai folder role
             if ($user['role'] == 'admin') {

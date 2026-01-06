@@ -202,10 +202,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <div class="sidebar-user-widget">
         <div class="user-avatar-small">
-            <?= strtoupper(substr($_SESSION['nama'], 0, 1)) ?>
+            <?= strtoupper(substr($_SESSION['nama_lengkap'], 0, 1)) ?>
         </div>
         <div class="user-info-text">
-            <p><?= explode(' ', $_SESSION['nama'])[0] ?></p>
+            <p><?= explode(' ', $_SESSION['nama_lengkap'])[0] ?></p>
             <small><?= strtoupper($_SESSION['role']) ?></small>
         </div>
     </div>

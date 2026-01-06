@@ -112,7 +112,7 @@ if (isset($_POST['absen'])) {
                 else echo "Selamat Malam 🌙";
                 ?>
             </p>
-            <h1>Halo, <?= explode(' ', $_SESSION['nama'])[0] ?>!</h1>
+            <h1>Halo, <?= explode(' ', $_SESSION['nama_lengkap'])[0] ?>!</h1>
             <p>Semangat bekerja! Pastikan absensi Anda tercatat hari ini.</p>
         </div>
 
