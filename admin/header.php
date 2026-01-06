@@ -3,6 +3,6 @@
         <strong>Panel Administrasi</strong>
     </div>
     <div class="header-right">
-        <span>Selamat Datang, <b><?= $_SESSION['nama'] ?></b></span>
+        <span>Selamat Datang, <b><?= $_SESSION['nama_lengkap'] ?></b></span>
     </div>
 </header>

@@ -3,8 +3,10 @@ include "../db_connect.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $identifier = mysqli_real_escape_string($koneksi, $_POST['identifier']);
-    $password   = $_POST['password'];
+    $password = $_POST['password'];
     $role_input = $_POST['role'];
+
+    // 1. Hapus baris $_SESSION yang ada di sini karena $user belum didefinisikan
 
     // Cari user berdasarkan email ATAU nip dan role yang dipilih
     $query = "SELECT * FROM pegawai WHERE (email='$identifier' OR nip='$identifier') AND role='$role_input' LIMIT 1";
@@ -13,11 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_num_rows($result) === 1) {
         $user = mysqli_fetch_assoc($result);
 
-        // Verifikasi Password (Gunakan password_verify jika sudah di-hash)
+        // Verifikasi Password
         if (password_verify($password, $user['password'])) {
-            $_SESSION['id_user']   = $user['id_pegawai'];
-            $_SESSION['nama']      = $user['nama_lengkap'];
-            $_SESSION['role']      = $user['role'];
+
+            // SIMPAN SESSION DI SINI SETELAH $user BERHASIL DIAMBIL
+            $_SESSION['id_user'] = $user['id_pegawai'];
+            $_SESSION['role'] = $user['role'];
+
+            // Perhatikan: Gunakan ['nama'] sesuai struktur database Anda
+            $_SESSION['nama_lengkap'] = $user['nama'];
 
             // Redirect sesuai folder role
             if ($user['role'] == 'admin') {

@@ -43,119 +43,168 @@ if (isset($_POST['update'])) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
-    <title>Edit Profil |
-        <?= $set['nama_perusahaan'] ?>
-    </title>
-    <link rel="stylesheet" href="../assets/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Saya | <?= $set['nama_perusahaan'] ?></title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         :root {
             --primary-color: <?= $set['warna_header'] ?>;
-            --button-color: <?= $set['warna_button'] ?>;
-            --font-color: <?= $set['warna_font'] ?>;
+            --accent-color: <?= $set['warna_button'] ?>;
+            --text-on-accent: <?= $set['warna_font'] ?>;
         }
 
-        .profile-container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f7fa; }
+        .main-content { margin-left: 320px; padding: 40px; min-height: 100vh; }
+
+        .profile-card {
+            background: white; border-radius: 20px; border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02); overflow: hidden;
+            max-width: 900px; margin: auto;
         }
 
-        .info-locked {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #ddd;
+        .profile-header {
+            background: var(--primary-color); padding: 40px; text-align: center; color: white;
         }
 
-        .info-locked label {
-            font-size: 12px;
-            color: #666;
-            display: block;
+        .avatar-circle {
+            width: 100px; height: 100px; background: white; color: var(--primary-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-weight: 700; margin: 0 auto 15px;
+            border: 4px solid rgba(255,255,255,0.3);
         }
 
-        .info-locked span {
-            font-weight: bold;
-            color: #333;
+        .form-section { padding: 40px; }
+
+        .info-box {
+            background: #f8f9fa; padding: 15px; border-radius: 12px;
+            border-left: 4px solid var(--primary-color); margin-bottom: 20px;
         }
 
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
+        .form-label { font-size: 0.75rem; font-weight: 700; color: #b2bec3; text-transform: uppercase; }
+        
+        .form-control-custom {
+            background: #f8f9fa; border: 2px solid transparent;
+            border-radius: 12px; padding: 12px 15px; transition: 0.3s; width: 100%;
+        }
+        .form-control-custom:focus { background: white; border-color: var(--primary-color); outline: none; }
+
+        .btn-update {
+            background: var(--accent-color); color: var(--text-on-accent);
+            border: none; padding: 15px; border-radius: 12px; width: 100%;
+            font-weight: 600; transition: 0.3s; margin-top: 20px;
+        }
+        .btn-update:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .password-notice {
+            font-size: 0.8rem; color: #636e72; background: #fff9e6;
+            padding: 10px; border-radius: 8px; margin-bottom: 15px;
         }
     </style>
 </head>
-
 <body>
 
-    <div class="wrapper">
-        <?php include "sidebar.php"; ?>
+    <?php include "sidebar.php"; ?>
 
-        <div class="main-content">
-            <?php include "../admin/header.php"; ?>
+    <div class="main-content">
+        <div class="mb-4">
+            <h4 class="fw-bold mb-0">👤 Profil Pengguna</h4>
+            <p class="text-muted small">Kelola informasi data diri dan keamanan akun Anda</p>
+        </div>
 
-            <div class="content-body">
-                <div class="profile-container">
-                    <h2>👤 Pengaturan Profil</h2>
-                    <p>Kelola informasi akun Anda di sini.</p>
-                    <hr><br>
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="avatar-circle">
+                    <?= strtoupper(substr($user['nama_lengkap'], 0, 1)) ?>
+                </div>
+                <h4 class="mb-1"><?= $user['nama_lengkap'] ?></h4>
+                <p class="mb-0 opacity-75 small"><?= $user['nama_jabatan'] ?? 'Pegawai' ?> • <?= $user['nip'] ?></p>
+            </div>
 
-                    <?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'berhasil'): ?>
-                        <div class="alert-success">Profil berhasil diperbarui!</div>
-                    <?php endif; ?>
+            <div class="form-section">
+                <form method="POST">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-user-gear me-2 text-primary"></i> Data Personal</h6>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Nomor Induk Pegawai (NIP)</label>
+                                <div class="info-box mb-0">
+                                    <span class="fw-bold text-dark"><?= $user['nip'] ?></span>
+                                    <small class="d-block text-muted">NIP tidak dapat diubah secara mandiri</small>
+                                </div>
+                            </div>
 
-                    <div class="info-locked">
-                        <label>Nomor Induk Pegawai (NIP)</label>
-                        <span>
-                            <?= $user['nip'] ?>
-                        </span>
-                    </div>
-                    <div class="info-locked">
-                        <label>Jabatan Saat Ini</label>
-                        <span>
-                            <?= $user['nama_jabatan'] ?? 'N/A' ?>
-                        </span>
-                    </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Lengkap</label>
+                                <input type="text" name="nama_lengkap" class="form-control-custom" value="<?= $user['nama_lengkap'] ?>" required>
+                            </div>
 
-                    <form method="POST">
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" value="<?= $user['nama_lengkap'] ?>" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Alamat Email</label>
-                            <input type="email" name="email" value="<?= $user['email'] ?>" required>
-                        </div>
-
-                        <div style="margin-top: 30px; padding: 15px; border: 1px solid #eee; border-radius: 10px;">
-                            <h4 style="margin-top: 0;">Ganti Kata Sandi</h4>
-                            <p style="font-size: 12px; color: #888;">Kosongkan jika tidak ingin mengganti password.</p>
-                            <div class="form-group">
-                                <label>Password Baru</label>
-                                <input type="password" name="password_baru" placeholder="Minimal 6 karakter">
+                            <div class="mb-3">
+                                <label class="form-label">Alamat Email</label>
+                                <input type="email" name="email" class="form-control-custom" value="<?= $user['email'] ?>" required>
                             </div>
                         </div>
 
-                        <br>
-                        <button type="submit" name="update" class="btn-login" style="width: 100%;">Simpan
-                            Perubahan</button>
-                    </form>
-                </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-shield-halved me-2 text-primary"></i> Keamanan Akun</h6>
+                            
+                            <div class="password-notice">
+                                <i class="fa-solid fa-circle-info me-2"></i> Kosongkan kolom di bawah jika Anda tidak ingin mengganti kata sandi.
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Kata Sandi Baru</label>
+                                <div class="position-relative">
+                                    <input type="password" name="password_baru" id="passInput" class="form-control-custom" placeholder="Masukkan password baru...">
+                                    <button type="button" onclick="togglePass()" class="btn position-absolute end-0 top-50 translate-middle-y border-0 text-muted">
+                                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Gunakan minimal 6 karakter kombinasi angka dan huruf.</small>
+                            </div>
+
+                            <button type="submit" name="update" class="btn-update">
+                                <i class="fa-solid fa-floppy-disk me-2"></i> Simpan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-</body>
+    <script>
+        // Fungsi Lihat Password
+        function togglePass() {
+            const input = document.getElementById('passInput');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
 
+        // Notifikasi Berhasil
+        <?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'berhasil'): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Profil Diperbarui',
+                text: 'Data profil Anda telah berhasil disimpan.',
+                confirmButtonColor: '<?= $set['warna_header'] ?>'
+            });
+        <?php endif; ?>
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
