@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             // Menggunakan kolom 'nama_lengkap' sesuai struktur tabel 'pegawai'
             $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
+	$_SESSION['id_pegawai'] = $user['id_pegawai'];
 
             // Redirect sesuai folder role
             if ($user['role'] == 'admin') {

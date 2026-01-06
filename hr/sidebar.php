@@ -10,7 +10,7 @@
     .sidebar {
         width: 280px;
         height: 100vh;
-        background: var(--side-primary); /* Tetap gelap agar elegan, atau ganti ke var(--side-primary) jika ingin full color */
+        background: var(--side-primary);
         color: white;
         position: fixed;
         left: 0;
@@ -42,7 +42,7 @@
     }
 
     .sidebar-header small {
-        color: var(--side-accent); /* Mengikuti warna button dari admin */
+        color: var(--side-accent);
         font-weight: 500;
         text-transform: uppercase;
         font-size: 10px;
@@ -88,7 +88,6 @@
         border-left: 4px solid var(--side-accent);
     }
 
-    /* Active State mengacu pada warna aksen sistem */
     .sidebar-menu li a.active {
         background: rgba(255, 255, 255, 0.05);
         color: var(--side-accent);
@@ -119,6 +118,11 @@
         </li>
 
         <li class="menu-label">Kepegawaian</li>
+        <li>
+            <a href="departemen.php" class="<?= strpos($uri, 'departemen.php') !== false ? 'active' : '' ?>">
+                <i class="fa-solid fa-sitemap"></i> Data Departemen
+            </a>
+        </li>
         <li>
             <a href="pegawai.php" class="<?= strpos($uri, 'pegawai.php') !== false ? 'active' : '' ?>">
                 <i class="fa-solid fa-user-group"></i> Data Pegawai

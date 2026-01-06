@@ -1,6 +1,37 @@
 <?php
+// Pastikan session sudah dimulai
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Mendapatkan nama file yang sedang aktif
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Ambil ID Pegawai dari session dengan pengamanan agar tidak error Undefined
+$id_user_login = isset($_SESSION['id_pegawai']) ? $_SESSION['id_pegawai'] : 0;
+
+// Logika Cek Kepala Divisi
+$is_kepala = false;
+$notif_count = 0;
+
+if ($id_user_login != 0) {
+    // Sesuaikan nama kolom menjadi id_kepala_dept sesuai database
+    $cek_kepala = mysqli_query($koneksi, "SELECT * FROM departemen WHERE id_kepala = '$id_user_login'");
+    
+    if (mysqli_num_rows($cek_kepala) > 0) {
+        $is_kepala = true;
+        $dept_data = mysqli_fetch_assoc($cek_kepala);
+        $id_dept_pimpinan = $dept_data['id_departemen'];
+
+        // Cek pengajuan yang butuh ACC atasan
+        $q_notif = mysqli_query($koneksi, "SELECT COUNT(*) as total FROM pengajuan_cuti pc 
+                   JOIN pegawai p ON pc.id_pegawai = p.id_pegawai 
+                   JOIN jabatan j ON p.id_jabatan = j.id_jabatan 
+                   WHERE j.id_departemen = '$id_dept_pimpinan' AND pc.status_atasan = 'pending'");
+        $notif_data = mysqli_fetch_assoc($q_notif);
+        $notif_count = $notif_data['total'];
+    }
+}
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -8,12 +39,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <style>
     :root {
-        --primary-color:
-            <?= $set['warna_header'] ?>
-        ;
-        --accent-color:
-            <?= $set['warna_button'] ?>
-        ;
+        --primary-color: <?= $set['warna_header'] ?>;
+        --accent-color: <?= $set['warna_button'] ?>;
         --sidebar-bg: #ffffff;
     }
 
@@ -33,7 +60,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         border: 1px solid rgba(0, 0, 0, 0.03);
     }
 
-    /* Header Sidebar */
     .sidebar-header {
         padding: 30px 25px;
         text-align: center;
@@ -59,10 +85,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
         line-height: 1.2;
     }
 
-    /* Menu Wrapper */
     .menu-container {
         flex-grow: 1;
         padding: 20px 15px;
+        overflow-y: auto;
     }
 
     .sidebar-menu {
@@ -94,7 +120,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         font-size: 1.1rem;
     }
 
-    /* Active & Hover State */
     .sidebar-menu li a:hover {
         background: #f8f9fa;
         color: var(--primary-color);
@@ -103,13 +128,34 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     .sidebar-menu li a.active {
         background: var(--primary-color);
-        color:
-            <?= $set['warna_font'] ?>
-            !important;
+        color: <?= $set['warna_font'] ?> !important;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 
-    /* Logout Style */
+    .menu-divider {
+        margin-top: 15px;
+        margin-bottom: 5px;
+        padding-left: 20px;
+    }
+
+    .menu-divider small {
+        color: #b2bec3;
+        font-weight: 700;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .badge-notif {
+        background: #ff7675;
+        color: white;
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-left: auto;
+        font-weight: 700;
+    }
+
     .btn-logout {
         margin-top: 20px;
         border-top: 1px solid #f8f9fa;
@@ -124,7 +170,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         background: #fff5f5 !important;
     }
 
-    /* Widget Info Pegawai */
     .sidebar-user-widget {
         margin: 15px;
         padding: 20px;
@@ -140,9 +185,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         height: 40px;
         border-radius: 10px;
         background: var(--primary-color);
-        color:
-            <?= $set['warna_font'] ?>
-        ;
+        color: <?= $set['warna_font'] ?>;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -176,6 +219,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fa-solid fa-house-chimney"></i> Dashboard / Absen
                 </a>
             </li>
+
+            <?php if ($is_kepala): ?>
+            <li class="menu-divider">
+                <small>Manajemen Tim</small>
+            </li>
+            <li>
+                <a href="persetujuan_cuti.php" class="<?= ($current_page == 'persetujuan_cuti.php') ? 'active' : '' ?>">
+                    <i class="fa-solid fa-clipboard-check"></i> Persetujuan Cuti
+                    <?php if ($notif_count > 0): ?>
+                        <span class="badge-notif"><?= $notif_count ?></span>
+                    <?php endif; ?>
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <li class="menu-divider">
+                <small>Menu Pribadi</small>
+            </li>
             <li>
                 <a href="cuti.php" class="<?= ($current_page == 'cuti.php') ? 'active' : '' ?>">
                     <i class="fa-solid fa-calendar-day"></i> Cuti & Izin
@@ -202,11 +263,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <div class="sidebar-user-widget">
         <div class="user-avatar-small">
-            <?= strtoupper(substr($_SESSION['nama_lengkap'], 0, 1)) ?>
+            <?= strtoupper(substr($_SESSION['nama_lengkap'] ?? 'U', 0, 1)) ?>
         </div>
         <div class="user-info-text">
-            <p><?= explode(' ', $_SESSION['nama_lengkap'])[0] ?></p>
-            <small><?= strtoupper($_SESSION['role']) ?></small>
+            <p><?= explode(' ', $_SESSION['nama_lengkap'] ?? 'User')[0] ?></p>
+            <small><?= strtoupper($_SESSION['role'] ?? 'PEGAWAI') ?></small>
         </div>
     </div>
 </div>

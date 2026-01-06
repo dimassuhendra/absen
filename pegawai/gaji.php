@@ -199,7 +199,7 @@ $data = mysqli_fetch_assoc($res_gaji);
                         <table class="table table-borderless sm">
                             <tr>
                                 <td class="text-muted small px-0" width="120">Nama Pegawai</td>
-                                <td class="fw-bold px-0">: <?= $data['nama'] ?></td>
+                                <td class="fw-bold px-0">: <?= $data['nama_lengkap'] ?></td>
                             </tr>
                             <tr>
                                 <td class="text-muted small px-0">Jabatan</td>
@@ -211,7 +211,9 @@ $data = mysqli_fetch_assoc($res_gaji);
                         <table class="table table-borderless sm">
                             <tr>
                                 <td class="text-muted small px-0" width="120">Periode Gaji</td>
-                                <td class="fw-bold px-0">: <?= date('F Y', strtotime($data['bulan_gaji'])) ?></td>
+<td class="fw-bold px-0">: 
+    <?= isset($data['bulan_tahun']) ? date('F Y', strtotime($data['bulan_tahun'])) : '-' ?>
+</td>
                             </tr>
                             <tr>
                                 <td class="text-muted small px-0">Status</td>
