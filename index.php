@@ -7,25 +7,19 @@ $set = getSetting($koneksi);
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login | <?= $set['nama_perusahaan'] ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Login |
+        <?= $set['nama_perusahaan'] ?>
+    </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
     <style>
         :root {
-            /* Warna dinamis dari database */
-            --primary-bg:
-                <?= $set['warna_header'] ?>
-            ;
-            --accent-color:
-                <?= $set['warna_button'] ?>
-            ;
-            --font-color:
-                <?= $set['warna_font'] ?>
-            ;
-
+            --primary-bg: <?= $set['warna_header'] ?>;
+            --accent-color: <?= $set['warna_button'] ?>;
+            --font-color: <?= $set['warna_font'] ?>;
             --dark-text: #343a40;
             --sub-text: #6c757d;
             --font-family-main: "Poppins", sans-serif;
@@ -39,20 +33,20 @@ $set = getSetting($koneksi);
             min-height: 100vh;
             margin: 0;
             background-color: #f4f7fa;
-            /* Pattern background halus */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.08'%3E%3Cpath d='M92.4 44.4C91 44.5 90 45.5 90 46.9c.1 1.4 1.1 2.4 2.5 2.4s2.4-1.1 2.4-2.5c0-1.4-1-2.4-2.5-2.4zM10 50c0-1.4-1.1-2.5-2.5-2.5S5 48.6 5 50s1.1 2.5 2.5 2.5S10 51.4 10 50zm90 0c0-1.4-1.1-2.5-2.5-2.5S95 48.6 95 50s1.1 2.5 2.5 2.5S100 51.4 100 50zM7.5 47.5c-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5-1.1-2.5-2.5-2.5zM2.4 44.4C1 44.5 0 45.5 0 46.9c.1 1.4 1.1 2.4 2.5 2.4s2.4-1.1 2.4-2.5c0-1.4-1-2.4-2.5-2.4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
         .login-container {
             width: 95%;
             max-width: 900px;
-            min-height: 550px;
+            margin: 20px auto;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
             border-radius: 24px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             background: white;
+            transition: all 0.3s ease-in-out;
         }
 
         /* --- Sisi Kiri: Visual Area --- */
@@ -68,7 +62,6 @@ $set = getSetting($koneksi);
             text-align: center;
         }
 
-        /* Siluet Teknologi / Circuit */
         .tech-silhouette {
             position: absolute;
             bottom: 0;
@@ -84,7 +77,7 @@ $set = getSetting($koneksi);
         .visual-area img.logo-main {
             width: 100px;
             margin-bottom: 20px;
-            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+            z-index: 2;
             background: white;
             padding: 10px;
             border-radius: 15px;
@@ -100,17 +93,29 @@ $set = getSetting($koneksi);
         }
 
         .logo-header {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             text-align: center;
         }
 
-        /* Custom Role Switcher */
+        /* Logo yang muncul hanya di Mobile */
+        .mobile-logo-header {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .mobile-logo-header img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        /* Role Switcher */
         .role-selector {
             display: flex;
             background: #f0f2f5;
             padding: 5px;
             border-radius: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .role-item {
@@ -124,7 +129,7 @@ $set = getSetting($koneksi);
         .role-item label {
             display: block;
             text-align: center;
-            padding: 8px;
+            padding: 10px 5px;
             cursor: pointer;
             border-radius: 10px;
             font-size: 13px;
@@ -141,7 +146,7 @@ $set = getSetting($koneksi);
 
         .input-group-custom {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .input-group-custom i {
@@ -150,7 +155,6 @@ $set = getSetting($koneksi);
             top: 50%;
             transform: translateY(-50%);
             color: var(--sub-text);
-            transition: 0.3s;
         }
 
         .input-group-custom input {
@@ -165,10 +169,7 @@ $set = getSetting($koneksi);
 
         .input-group-custom input:focus {
             border-color: var(--accent-color);
-        }
-
-        .input-group-custom input:focus+i {
-            color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.03);
         }
 
         .btn-login {
@@ -181,22 +182,69 @@ $set = getSetting($koneksi);
             font-weight: 600;
             margin-top: 10px;
             transition: 0.3s;
-            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-login:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
+        /* --- RESPONSIVE BREAKPOINTS --- */
+
+        /* Tablet (max-width: 992px) */
+        @media (max-width: 992px) {
+            .login-container {
+                max-width: 800px;
+            }
+
+            .login-form-area {
+                padding: 30px;
+            }
         }
 
+        /* Mobile (max-width: 768px) */
         @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+                /* Supaya bisa di-scroll jika keyboard muncul */
+                padding-top: 20px;
+            }
+
             .login-container {
                 grid-template-columns: 1fr;
-                max-width: 450px;
+                /* Jadi satu kolom stack ke bawah */
+                max-width: 400px;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             }
 
             .visual-area {
                 display: none;
+                /* Sembunyikan area biru di HP agar fokus ke form */
+            }
+
+            .mobile-logo-header {
+                display: block;
+                /* Munculkan logo kecil di atas form */
+            }
+
+            .login-form-area {
+                padding: 30px 20px;
+            }
+
+            .role-item label {
+                font-size: 12px;
+            }
+        }
+
+        /* Small Screen / Android Kecil (max-width: 360px) */
+        @media (max-width: 360px) {
+            .login-container {
+                width: 98%;
+                margin: 10px auto;
+            }
+
+            .login-form-area {
+                padding: 20px 15px;
+            }
+
+            .role-selector {
+                margin-bottom: 15px;
             }
         }
     </style>
@@ -208,8 +256,10 @@ $set = getSetting($koneksi);
         <div class="visual-area">
             <div class="tech-silhouette"></div>
             <img src="assets/img/<?= $set['logo'] ?>" alt="Logo" class="logo-main shadow" />
-            <h2 class="fw-bold"><?= $set['nama_perusahaan'] ?></h2>
-            <p class="opacity-75 mt-2">Sistem Informasi Manajemen Kepegawaian</p>
+            <h2 class="fw-bold">
+                <?= $set['nama_perusahaan'] ?>
+            </h2>
+            <p class="opacity-75 mt-2">SIM Kepegawaian</p>
             <div class="mt-4 border-top border-white border-opacity-25 pt-4 w-75">
                 <small class="fst-italic text-white text-opacity-75">"Efisiensi dalam setiap langkah kerja
                     kita."</small>
@@ -217,9 +267,16 @@ $set = getSetting($koneksi);
         </div>
 
         <div class="login-form-area">
+            <div class="mobile-logo-header">
+                <img src="assets/img/<?= $set['logo'] ?>" alt="Logo" />
+                <h5 class="fw-bold mb-0">
+                    <?= $set['nama_perusahaan'] ?>
+                </h5>
+            </div>
+
             <div class="logo-header">
                 <h3 class="fw-bold text-dark">Selamat Datang</h3>
-                <p class="text-muted small">Silakan login untuk masuk ke dashboard</p>
+                <p class="text-muted small">Login untuk akses dashboard</p>
             </div>
 
             <form action="proses/proses_login.php" method="POST">
@@ -253,8 +310,9 @@ $set = getSetting($koneksi);
                 </button>
             </form>
 
-            <div class="text-center mt-5 text-muted" style="font-size: 11px;">
-                &copy; 2026 <?= $set['nama_perusahaan'] ?> <br>
+            <div class="text-center mt-4 text-muted" style="font-size: 11px;">
+                &copy; 2026
+                <?= $set['nama_perusahaan'] ?> <br>
                 Powered by CMS Company
             </div>
         </div>
